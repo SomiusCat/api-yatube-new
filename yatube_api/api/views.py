@@ -4,26 +4,26 @@ from rest_framework.permissions import IsAuthenticated
 
 from posts.models import Group, Post
 
-from .mixins import AuthorOnlyMixin
+from .permissions import IsAuthorOrReadOnly
 from .serializers import CommentSerializer, GroupSerializer, PostSerializer
 
 
-class PostViewSet(AuthorOnlyMixin, viewsets.ModelViewSet):
+class PostViewSet(viewsets.ModelViewSet):
     """CRUD для модели Post."""
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
 
-class CommentViewSet(AuthorOnlyMixin, viewsets.ModelViewSet):
+class CommentViewSet(viewsets.ModelViewSet):
     """CRUD для модели Comment."""
 
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
 
     def get_post(self):
         """Возвращает пост по id или 404."""
