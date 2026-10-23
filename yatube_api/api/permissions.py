@@ -5,9 +5,7 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
     """Разрешает изменять и удалять объект только его автору."""
 
     def has_object_permission(self, request, view, obj):
-        # Чтение разрешено всем
-        if request.method in permissions.SAFE_METHODS:
-            return True
-
-        # Изменение и удаление — только автору
-        return obj.author == request.user
+        return (
+            request.method in permissions.SAFE_METHODS
+            or obj.author == request.user
+        )
